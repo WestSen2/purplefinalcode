@@ -23,4 +23,5 @@ public final class Constants {
         public static final int SHOOT_MOTOR_ID = 34;
         public static final int HOOD_MOTOR_ID = 32;
         public static final int CANCODER_ID = 25;
+    }
 }
