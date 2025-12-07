@@ -7,6 +7,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeConstants;
 
 /**
  * Ground intake subsystem that uses a single motor to intake game pieces.
@@ -14,10 +15,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class GroundIntake extends SubsystemBase {
     private final TalonFX intakeMotor;
     private final VoltageOut voltageRequest = new VoltageOut(0);
-
-    // Intake speeds (in volts)
-    private static final double INTAKE_SPEED = 8.0;  // Adjust this value as needed
-    private static final double OUTTAKE_SPEED = -6.0; // For reversing if needed
 
     /**
      * Creates a new GroundIntake subsystem.
@@ -31,7 +28,7 @@ public class GroundIntake extends SubsystemBase {
         // Configure the motor
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        config.CurrentLimits.SupplyCurrentLimit = 40.0;
+        config.CurrentLimits.SupplyCurrentLimit = IntakeConstants.CURRENT_LIMIT;
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
 
         intakeMotor.getConfigurator().apply(config);
@@ -42,14 +39,14 @@ public class GroundIntake extends SubsystemBase {
      * Runs the intake motor to pull in game pieces.
      */
     public void intake() {
-        intakeMotor.setControl(voltageRequest.withOutput(INTAKE_SPEED));
+        intakeMotor.setControl(voltageRequest.withOutput(IntakeConstants.INTAKE_SPEED));
     }
 
     /**
      * Runs the intake motor in reverse to eject game pieces.
      */
     public void outtake() {
-        intakeMotor.setControl(voltageRequest.withOutput(OUTTAKE_SPEED));
+        intakeMotor.setControl(voltageRequest.withOutput(IntakeConstants.OUTTAKE_SPEED));
     }
 
     /**
