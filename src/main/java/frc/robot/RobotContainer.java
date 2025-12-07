@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GroundIntake;
+import frc.robot.subsystems.Shooty; // <<<< ADDED THIS IMPORT
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -37,6 +38,14 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final GroundIntake intake = new GroundIntake(Constants.IntakeConstants.INTAKE_MOTOR_ID);
+    
+    // <<<< INSTANTIATED SHOOTY SUBSYSTEM HERE >>>>
+    // Ensure Constants.ShooterConstants is defined in Constants.java with correct IDs
+    public final Shooty shooterHood = new Shooty(
+        Constants.ShooterConstants.SHOOT_MOTOR_ID, 
+        Constants.ShooterConstants.HOOD_MOTOR_ID, 
+        Constants.ShooterConstants.CANCODER_ID
+    );
 
     public RobotContainer() {
         configureBindings();
@@ -80,6 +89,17 @@ public class RobotContainer {
         joystick.touchpad().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        // <<<< ADDED SHOOTER/HOOD BINDINGS HERE >>>>
+
+        // L2 (left trigger) runs the shooter motor while held
+        joystick.L2().whileTrue(shooterHood.shootCommand());
+
+        // D-Pad Up (POV 0) aims the hood farther (moves up) while held
+        joystick.povUp().whileTrue(shooterHood.aimFartherCommand());
+
+        // D-Pad Down (POV 180) aims the hood closer (moves down) while held
+        joystick.povDown().whileTrue(shooterHood.aimCloserCommand());
     }
 
     public Command getAutonomousCommand() {
