@@ -3,10 +3,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.CANCoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.CANcoder; // Correct CANcoder import
+import com.ctre.phoenix6.hardware.CANcoder; 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue; // Correct SensorDirection import
+import com.ctre.phoenix6.signals.SensorDirectionValue; 
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -112,6 +112,19 @@ public class Shooty extends SubsystemBase {
         double degrees = rotations * 360.0;
         
         return degrees;
+    }
+
+    /**
+     * Command to run the shooter while the button is held.
+     *
+     * @return Command that runs the shooter
+     */
+    // <<<< ADDED shootCommand() METHOD BACK IN >>>>
+    public Command shootCommand() {
+        return this.runEnd(
+            this::shoot,
+            this::stopShooting
+        );
     }
 
     // Renamed aimFurtherCommand to aimFartherCommand to match method name
