@@ -13,6 +13,8 @@ public final class Constants {
     public static class IntakeConstants {
         // CAN ID for the intake motor
         // TODO: Set this to the actual CAN ID of your intake motor
+        public static final double INTAKE_SPEED = 12.0;
+        public static final double OUTTAKE_SPEED = 12.0;
         public static final int INTAKE_MOTOR_ID = 27;
         public static final int INDEXER_MOTOR_ID = 29;
     }
