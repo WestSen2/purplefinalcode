@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.GroundIntake;
-import frc.robot.subsystems.Shooty; // <<<< ADDED THIS IMPORT
+import frc.robot.subsystems.Shooty; 
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -37,10 +37,8 @@ public class RobotContainer {
     private final CommandPS5Controller joystick = new CommandPS5Controller(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final GroundIntake intake = new GroundIntake(Constants.IntakeConstants.INTAKE_MOTOR_ID);
+    public final GroundIntake intake = new GroundIntake(Constants.IntakeConstants.INTAKE_MOTOR_ID, Constants.IntakeConstants.INDEXER_MOTOR_ID);
     
-    // <<<< INSTANTIATED SHOOTY SUBSYSTEM HERE >>>>
-    // Ensure Constants.ShooterConstants is defined in Constants.java with correct IDs
     public final Shooty shooterHood = new Shooty(
         Constants.ShooterConstants.SHOOT_MOTOR_ID, 
         Constants.ShooterConstants.HOOD_MOTOR_ID, 
@@ -52,19 +50,15 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
+        // ... (existing drivetrain and SysId code remains unchanged) ...
         drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) 
+                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) 
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) 
             )
         );
 
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
@@ -76,7 +70,6 @@ public class RobotContainer {
         ));
 
         // Run SysId routines when holding create/options and triangle/square.
-        // Note that each routine should be run exactly once in a single log.
         joystick.create().and(joystick.triangle()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
         joystick.create().and(joystick.square()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
         joystick.options().and(joystick.triangle()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
@@ -90,10 +83,17 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        // <<<< ADDED SHOOTER/HOOD BINDINGS HERE >>>>
+        // <<<< UPDATED INTAKE/OUTTAKE BINDINGS FOR L2/R2 >>>>
+        
+        // L2 Trigger (left trigger, check if pressed past 50%) runs intake
+        joystick.L2().greaterThan(0.5).whileTrue(intake.intakeCommand());
 
-        // L2 (left trigger) runs the shooter motor while held
-        joystick.L2().whileTrue(shooterHood.shootCommand());
+        // R2 Trigger (right trigger, check if pressed past 50%) runs outtake
+        joystick.R2().greaterThan(0.5).whileTrue(intake.outtakeCommand());
+
+        // <<<< SHOOTER/HOOD BINDINGS >>>>
+        // Moved the shoot command from L2 to the Square button since L2/R2 are now used for intake/outtake
+        joystick.square().whileTrue(shooterHood.shootCommand());
 
         // D-Pad Up (POV 0) aims the hood farther (moves up) while held
         joystick.povUp().whileTrue(shooterHood.aimFartherCommand());
