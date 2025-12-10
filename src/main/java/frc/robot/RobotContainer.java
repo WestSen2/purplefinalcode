@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
@@ -53,9 +54,9 @@ public class RobotContainer {
         // ... (existing drivetrain and SysId code remains unchanged) ...
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed) 
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed) 
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) 
+                drive.withVelocityX(joystick.getLeftY() * MaxSpeed)
+                    .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
         );
 
@@ -86,10 +87,10 @@ public class RobotContainer {
         // <<<< UPDATED INTAKE/OUTTAKE BINDINGS FOR L2/R2 >>>>
         
         // L2 Trigger (left trigger, check if pressed past 50%) runs intake
-        joystick.L2().greaterThan(0.5).whileTrue(intake.intakeCommand());
+        new Trigger(() -> joystick.getL2Axis() > 0.5).whileTrue(intake.intakeCommand());
 
         // R2 Trigger (right trigger, check if pressed past 50%) runs outtake
-        joystick.R2().greaterThan(0.5).whileTrue(intake.outtakeCommand());
+        new Trigger(() -> joystick.getR2Axis() > 0.5).whileTrue(intake.outtakeCommand());
 
         // <<<< SHOOTER/HOOD BINDINGS >>>>
         // Moved the shoot command from L2 to the Square button since L2/R2 are now used for intake/outtake
