@@ -54,8 +54,8 @@ public class RobotContainer {
         // ... (existing drivetrain and SysId code remains unchanged) ...
         drivetrain.setDefaultCommand(
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(joystick.getLeftY() * MaxSpeed)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed)
+                drive.withVelocityX(joystick.getLeftX() * MaxSpeed)
+                    .withVelocityY(-joystick.getLeftY() * MaxSpeed)
                     .withRotationalRate(-joystick.getRightX() * MaxAngularRate)
             )
         );
